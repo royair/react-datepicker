@@ -2,13 +2,14 @@
 
 ### Create custom designed calendar component according the design in design folder.
 * The calendar should allow date selection between today till 12+ months.
-* Dates from the beginning of current months till today are not selectable
-* fonts are included in fonts folder
+* Passed days of the current month are not selectable
+* Fonts are included in fonts folder
 
 
 ### The main requirnments are:
-* usage of any other datepicker is disallowed. Everything should be custom code.
+* usage of any other UI datepickers is disallowed. Everything should be custom code.
 * usage of CSS frameworks is disallowed
+* usage of date manipulation libraries is allowed
 * data model should be strictly separated from UI (use Redux, Mobx, React Context or any other state management). Calendar should be able to be easily cloned by providing another data model.
 * UI should be exactly the same as provided PNG images
 * calendar should be easalliy
