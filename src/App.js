@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import './App.scss';
 
-import Datepicker from './datepicker/datepicker'
+import Datepicker from './components/datepicker'
 
 class App extends Component {
   render() {
