@@ -1,0 +1,209 @@
+@import '../css/colors';
+
+$size: 33px;
+
+.calendar {
+  display: inline-block;
+  position: relative;
+  padding: 16px 32px;
+  margin: 10px;
+  border-radius: 10px;
+  font-family: almoni-dl;
+  font-weight: 700;
+  box-shadow: 0 0 12px 0 rgba(232, 232, 232, 1);
+
+  .icon-close {
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    width: 14px;
+    height: 14px;
+    fill: $light-gray;
+    cursor: pointer;
+
+    &:hover {
+      fill: $dark-gray;
+    }
+  }
+
+  .title {
+    font-size: 19px;
+    margin: 25px 0 16px 0;
+  }
+
+  .days-of-week {
+    margin: 10px 0;
+
+    .day {
+      display: inline-block;
+      width: $size;
+      height: $size;
+      margin: 0 3px;
+      direction: rtl;
+      color: $gray;
+      font-size: 14px;
+    }
+  }
+
+  .month {
+    .week {
+      margin: 4px 0;
+
+      .day {
+        display: inline-block;
+        width: $size;
+        height: $size;
+        margin: 0 3px;
+
+        border-radius: 50%;
+        color: $light-gray;
+        text-align: center;
+        transition: all 0.15s ease;
+        line-height: $size;
+        font-size: 12px;
+        font-family: 'Open Sans', sans-serif;
+
+        &.selectable {
+          color: $turquoise;
+          background-color: $light-blue;
+          cursor: pointer;
+
+
+          &.selected {
+            color: white !important;
+            background-color: $turquoise !important;
+            cursor: default;
+          }
+
+          &:hover {
+            color: white;
+            background-color: lighten($turquoise, 35%);
+          }
+        }
+      }
+    }
+  }
+
+  .legend {
+
+    ul {
+      list-style-type: none;
+
+      li {
+        display: flex;
+        flex-direction: row-reverse;
+        align-items: center;
+
+        label {
+
+        }
+
+        .circle {
+          display: inline-block;
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          margin-left: 12px;
+        }
+
+        .pink {
+          background: $pink;
+        }
+
+        .blue {
+          background: $light-blue;
+        }
+      }
+    }
+  }
+
+  .month-picker {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: space-between;
+
+    .icon-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 31px;
+      height: 31px;
+      border: 1px solid $gray;
+      border-radius: 3px;
+      cursor: pointer;
+
+      .icon {
+        width: 14px;
+        height: 14px;
+        fill: $dark-gray;
+      }
+    }
+
+    .months {
+      position: relative;
+      text-align: right;
+      width: 176px;
+      cursor: pointer;
+      border-radius: 5px 5px 0 0;
+
+      .selected {
+        padding: 7px 8px;
+        border-bottom: 1px solid $light-gray;
+        transition: inherit;
+
+        &:hover {
+          border-bottom: 1px solid $dark-gray;
+        }
+      }
+
+      ul {
+        padding: 0;
+        direction: rtl;
+        display: none;
+        position: absolute;
+        top: 33px;
+        right: 0;
+        margin: 0;
+        width: 100%;
+        height: 300px;
+        box-sizing: border-box;
+        overflow-y: auto;
+        list-style-type: none;
+        border-radius: 0 0 5px 5px;
+
+        li {
+          padding: 5px 8px;
+
+          &:hover {
+            background-color: $light-turquoise;
+            color: $turquoise;
+          }
+        }
+      }
+
+      &.opened {
+        background-color: $very-light-gray;
+        box-shadow: 0 0 12px 0 rgba(232, 232, 232, 1);
+
+        ul {
+          display: block;
+          background-color: $very-light-gray;
+          box-shadow: 0px 12px 16px 0px rgba(217, 217, 217, 1);
+
+          &::-webkit-scrollbar {
+            width: 18px;
+            padding: 0 2px;
+          }
+
+          &::-webkit-scrollbar-thumb {
+            background: $light-gray;
+            border: 6px solid rgba(0, 0, 0, 0);
+            background-clip: padding-box;
+            border-radius: 9px;
+          }
+        }
+      }
+    }
+  }
+}
