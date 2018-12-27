@@ -120,6 +120,16 @@ class Datepicker extends Component {
             <span className="day selectable">12</span>
           </div>
 
+          <div className="week">
+            <span className="day selectable">12</span>
+            <span className="day selectable">12</span>
+            <span className="day selectable ">12</span>
+            <span className="day selectable">12</span>
+            <span className="day selectable">12</span>
+            <span className="day selectable">12</span>
+            <span className="day selectable">12</span>
+          </div>
+
           <div className="legend">
             <ul>
               <li>
