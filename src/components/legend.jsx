@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-export function Legend() {
+export default function Legend() {
   return (
     <div className="legend">
       <ul>

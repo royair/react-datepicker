@@ -3,7 +3,7 @@ import moment from 'moment';
 import classNames from 'classnames';
 
 import Month from '../components/month';
-import { Legend } from '../components/legend';
+import Legend from '../components/legend';
 import { IconNext, IconPrevious, IconClose } from '../components/icons';
 
 import './datepicker.scss';
@@ -11,12 +11,11 @@ import './datepicker.scss';
 const monthNames = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'];
 
 class Datepicker extends Component {
-
   constructor(props) {
     super(props);
 
-    this.monthsList= null;
-    this.state       = {
+    this.monthsList = null;
+    this.state      = {
       months: [],
       selectedMonth: {},
       selectedDay: {},
@@ -82,6 +81,8 @@ class Datepicker extends Component {
             selectable: current.isSameOrAfter(today, 'day')
           };
           break;
+        default:
+
       }
 
       week.days.push(day);
