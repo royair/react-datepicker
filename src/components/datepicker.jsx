@@ -15,7 +15,8 @@ class Datepicker extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
+    this.monthsList= null;
+    this.state       = {
       months: [],
       selectedMonth: {},
       selectedDay: {},
@@ -100,7 +101,7 @@ class Datepicker extends Component {
 
     month.year  = startOfMonth.year();
     month.value = startOfMonth.month();
-    month.id = `${month.year}-${month.value}`;
+    month.id    = `${month.year}-${month.value}`;
 
     this.setState((state) => ({
       months: [...state.months, month]
@@ -146,7 +147,7 @@ class Datepicker extends Component {
     if (!prevMonth) return;
 
     const months = this.state.months.map((month) => {
-      if (month.selected) month.selected = false && month;
+      if (month.selected) month.selected = false;
       if (month === prevMonth) month.selected = true;
 
       return month;
@@ -167,17 +168,38 @@ class Datepicker extends Component {
 
   onClickMonthList = () => {
     this.setState((oldState) => ({ isOpen: !oldState.isOpen }));
+    document.addEventListener('click', this.onClickOutside);
+  };
+
+  onClickMonthItem = (selectedMonth) => {
+    const months = this.state.months.map((month) => {
+      if (month.selected) month.selected = false;
+      if (month === selectedMonth) month.selected = true;
+
+      return month;
+    });
+
+    this.setState((oldState) => ({ months: [...months] }));
+    this.closeMenu();
   };
 
   arrowKeysHandler = (e) => {
-    // make sure to operate only if select is opened
+    // ignore arrow keys if select options are closed
     if (!this.state.isOpen) return;
-
-
   };
 
   getMonthList = () => {
-    return this.state.months.map((month) => (<li key={month.id}>{month.name()}</li>));
+    return this.state.months.map((month) => (<li key={month.id}
+                                                 onClick={() => this.onClickMonthItem(month)}>{month.name()}</li>));
+  };
+
+  onClickOutside = (e) => {
+    if (!this.monthsList.contains(e.target)) this.closeMenu();
+  };
+
+  closeMenu = () => {
+    this.setState((oldState) => ({ isOpen: false }));
+    document.removeEventListener('click', this.onClickOutside);
   };
 
   render() {
@@ -194,7 +216,8 @@ class Datepicker extends Component {
                     onClick={this.onNextMonth}
                     disabled={!this.getNextMonth()}/>
 
-          <div className={classNames('months', { opened: this.state.isOpen })}>
+          <div className={classNames('months', { opened: this.state.isOpen })}
+               ref={(element) => this.monthsList = element}>
             <div
               className="selected"
               onClick={this.onClickMonthList}>{this.getSelectedMonth() && this.getSelectedMonth().name()}</div>

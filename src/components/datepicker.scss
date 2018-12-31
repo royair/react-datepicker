@@ -8,9 +8,12 @@ $size: 33px;
   padding: 16px 32px;
   margin: 10px;
   border-radius: 10px;
+  min-width: 340px;
+  box-sizing: border-box;
   font-family: almoni-dl;
   font-weight: 700;
   box-shadow: 0 0 12px 0 rgba(232, 232, 232, 1);
+  user-select: none;
 
   .icon-close {
     position: absolute;
@@ -170,7 +173,6 @@ $size: 33px;
         border-width: 0 $triangleSize $triangleSize $triangleSize;
         border-color: transparent transparent $dark-gray transparent;
       }
-
 
       .selected {
         padding: 7px 8px;
