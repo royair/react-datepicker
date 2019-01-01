@@ -14,11 +14,12 @@ class Datepicker extends Component {
   constructor(props) {
     super(props);
 
-    this.monthsList = null;
-    this.state      = {
+    this.monthsListElem = undefined;
+    this.state          = {
       months: [],
-      selectedMonth: {},
-      selectedDay: {},
+      selectedMonth: undefined,
+      hoveredMonth: undefined,
+      selectedDay: undefined,
       isOpen: false,
     };
   }
@@ -29,6 +30,9 @@ class Datepicker extends Component {
 
       this.populateMonth(firstDayOfMonth);
     }
+
+    // set selected month to the first one in the array
+    this.setState((state) => ({ selectedMonth: state.months[0] }));
   }
 
   populateMonth = (firstDayOfMonth) => {
@@ -105,102 +109,88 @@ class Datepicker extends Component {
     month.id    = `${month.year}-${month.value}`;
 
     this.setState((state) => ({
-      months: [...state.months, month]
+      months: [...state.months, month],
+
     }));
   };
 
   getSelectedMonth = () => {
-    return this.state.months.find((month) => month.selected);
+    return this.state.selectedMonth;
   };
 
   getSelectedMonthIndex = () => {
-    return this.state.months.findIndex((month) => month.selected);
+    const { selectedMonth } = this.state;
+
+    return this.state.months.findIndex((month) => month === selectedMonth);
   };
 
-  onSelectMonth = () => {
+  handleClickNext = () => {
+    const next = this.getNextMonth();
 
+    // abort if end of list
+    if (!next) return;
+
+    this.setState(() => ({ selectedMonth: next }));
   };
 
-  onSelectDay = () => {
+  handleClickPrev = () => {
+    const prev = this.getPrevMonth();
 
-  };
+    // abort if end of list
+    if (!prev) return;
 
-  onNextMonth = () => {
-    const nextMonth = this.getNextMonth();
-
-    // abort in case of no next (end of array)
-    if (!nextMonth) return;
-
-    const months = this.state.months.map((month) => {
-      if (month.selected) month.selected = false && month;
-      if (month === nextMonth) month.selected = true;
-
-      return month;
-    });
-
-    this.setState((state) => ({ months: [...months] }));
-  };
-
-  onPrevMonth = () => {
-    const prevMonth = this.getPrevMonth();
-
-    // abort in case of no next (end of array)
-    if (!prevMonth) return;
-
-    const months = this.state.months.map((month) => {
-      if (month.selected) month.selected = false;
-      if (month === prevMonth) month.selected = true;
-
-      return month;
-    });
-
-    this.setState((state) => ({ months: [...months] }));
+    this.setState(() => ({ selectedMonth: prev }));
   };
 
   getNextMonth = () => {
-    const selectedMonthIndex = this.getSelectedMonthIndex();
-    return this.state.months[selectedMonthIndex + 1];
+    const index = this.getSelectedMonthIndex();
+
+    // return if end of list
+    if (index === this.state.months.length - 1) return;
+
+    return this.state.months[index + 1];
   };
 
   getPrevMonth = () => {
-    const selectedMonthIndex = this.getSelectedMonthIndex();
-    return this.state.months[selectedMonthIndex - 1];
+    const index = this.getSelectedMonthIndex();
+
+    // return if in the beginning of list
+    if (index === 0) return;
+
+    return this.state.months[index - 1];
   };
 
-  onClickMonthList = () => {
-    this.setState((oldState) => ({ isOpen: !oldState.isOpen }));
-    document.addEventListener('click', this.onClickOutside);
+  handleToggleShowList = () => {
+    this.state.isOpen ? this.closeList() : this.openList();
   };
 
-  onClickMonthItem = (selectedMonth) => {
-    const months = this.state.months.map((month) => {
-      if (month.selected) month.selected = false;
-      if (month === selectedMonth) month.selected = true;
-
-      return month;
-    });
-
-    this.setState((oldState) => ({ months: [...months] }));
-    this.closeMenu();
+  handleMonthSelection = (selectedMonth) => {
+    this.setState(() => ({ selectedMonth }));
+    this.closeList();
   };
 
-  arrowKeysHandler = (e) => {
-    // ignore arrow keys if select options are closed
-    if (!this.state.isOpen) return;
+  handleDaySelection = (selectedDay) => {
+    this.setState(() => ({ selectedDay }));
+    console.log(selectedDay);
+  };
+
+  onClickOutside = (e) => {
+    if (!this.monthsListElem.contains(e.target)) this.closeList();
   };
 
   getMonthList = () => {
     return this.state.months.map((month) => (<li key={month.id}
-                                                 onClick={() => this.onClickMonthItem(month)}>{month.name()}</li>));
+                                                 onClick={() => this.handleMonthSelection(month)}>{month.name()}</li>));
   };
 
-  onClickOutside = (e) => {
-    if (!this.monthsList.contains(e.target)) this.closeMenu();
-  };
-
-  closeMenu = () => {
-    this.setState((oldState) => ({ isOpen: false }));
+  closeList = () => {
+    this.setState(() => ({ isOpen: false }));
     document.removeEventListener('click', this.onClickOutside);
+  };
+
+  openList = () => {
+    this.setState(() => ({ isOpen: true }));
+    document.addEventListener('click', this.onClickOutside);
   };
 
   render() {
@@ -214,21 +204,21 @@ class Datepicker extends Component {
         <div className="month-picker">
 
           <IconNext className={'icon-next'}
-                    onClick={this.onNextMonth}
+                    onClick={this.handleClickNext}
                     disabled={!this.getNextMonth()}/>
 
           <div className={classNames('months', { opened: this.state.isOpen })}
-               ref={(element) => this.monthsList = element}>
+               ref={(element) => this.monthsListElem = element}>
             <div
               className="selected"
-              onClick={this.onClickMonthList}>{this.getSelectedMonth() && this.getSelectedMonth().name()}</div>
+              onClick={this.handleToggleShowList}>{this.getSelectedMonth() && this.getSelectedMonth().name()}</div>
             <ul>
               {this.getMonthList()}
             </ul>
           </div>
 
           <IconPrevious className={'icon-previous'}
-                        onClick={this.onPrevMonth}
+                        onClick={this.handleClickPrev}
                         disabled={!this.getPrevMonth()}/>
 
         </div>
@@ -243,7 +233,8 @@ class Datepicker extends Component {
           <div className="day">א'</div>
         </div>
 
-        <Month month={this.getSelectedMonth()}></Month>
+        <Month month={this.getSelectedMonth()}
+               onClickDay={this.handleDaySelection}></Month>
 
         <Legend/>
 

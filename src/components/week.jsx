@@ -4,12 +4,14 @@ import Day from "./day";
 
 class Week extends Component {
   render() {
-    const className = classNames('week');
-    const days      = this.props.week && this.props.week.days.map((day) => <Day
-      key={day.id} day={day}></Day>)
+    const { week, onClickDay} = this.props;
+    const days      = week && week.days.map((day) => <Day
+      key={day.id}
+      day={day}
+      onClickDay={onClickDay}></Day>)
 
     return (
-      <div className={className}>{days}</div>
+      <div className={'week'}>{days}</div>
     )
   }
 }

@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
-import classNames from 'classnames';
 import Week from "./week";
 
 class Month extends Component {
   render() {
-    const className = classNames('month');
-    const weeks     = this.props.month.weeks.map((week) => <Week key={week.id}
-                                                                 week={week}></Week>);
+    const { month, onClickDay } = this.props;
+    const weeks                 = month.weeks.map((week) => <Week
+      key={week.id}
+      week={week}
+      onClickDay={onClickDay}></Week>);
 
     return (
-      <div className={className}>{weeks}</div>
+      <div className={'month'}>{weeks}</div>
     )
   }
 }
