@@ -3,11 +3,15 @@ import classNames from 'classnames';
 
 class Day extends Component {
   render() {
-    const { day, onClickDay } = this.props;
-    const className           = classNames('day', { selectable: day.selectable });
+    const { day, onClickDay, selectedDay } = this.props;
+    const className                        = classNames('day', {
+      selectable: day.selectable,
+      selected: day === selectedDay
+    });
 
     return (
-      <span className={className} onClick={() => onClickDay(day)}>{day.value}</span>
+      <span className={className}
+            onClick={() => onClickDay(day)}>{day.value}</span>
     )
   }
 }

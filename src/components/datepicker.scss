@@ -202,7 +202,7 @@ $size: 33px;
         li {
           padding: 5px 8px;
 
-          &:hover {
+          &.hovered {
             background-color: $light-turquoise;
             color: $turquoise;
           }

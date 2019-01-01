@@ -14,12 +14,12 @@ class Datepicker extends Component {
   constructor(props) {
     super(props);
 
-    this.monthsListElem = undefined;
-    this.state          = {
+    this.monthsListElem   = undefined;
+    this.hoveredMonthElem = undefined;
+    this.state            = {
       months: [],
       selectedMonth: undefined,
       hoveredMonth: undefined,
-      selectedDay: undefined,
       isOpen: false,
     };
   }
@@ -33,6 +33,55 @@ class Datepicker extends Component {
 
     // set selected month to the first one in the array
     this.setState((state) => ({ selectedMonth: state.months[0] }));
+
+    // add arrow key listeners to menu
+    document.addEventListener('keydown', (e) => {
+
+      // abort if list is closed
+      if (!this.state.isOpen) return;
+      let newHoveredMonth;
+
+      switch (e.key) {
+        case 'ArrowDown':
+          // if no hovered month set it to the first month
+          newHoveredMonth = this.state.hoveredMonth
+            ? this.getNextMonth(this.state.hoveredMonth)
+            : this.state.months[0];
+
+          // abort if at the end of list
+          if (!newHoveredMonth) return;
+
+          this.setState(() => ({ hoveredMonth: newHoveredMonth }), () => {
+            this.hoveredMonthElem.scrollIntoView();
+          });
+          break;
+
+        case 'ArrowUp':
+          // if no hovered month set it to the first month
+          newHoveredMonth = this.state.hoveredMonth
+            ? this.getPrevMonth(this.state.hoveredMonth)
+            : this.state.months[0];
+
+          // abort if at the end of list
+          if (!newHoveredMonth) return;
+
+          this.setState(() => ({ hoveredMonth: newHoveredMonth }), () => {
+            this.hoveredMonthElem.scrollIntoView();
+          });
+          break;
+
+        case 'Escape':
+          this.closeList();
+          break;
+
+        case 'Enter':
+
+          break;
+
+        default:
+      }
+
+    });
   }
 
   populateMonth = (firstDayOfMonth) => {
@@ -177,18 +226,28 @@ class Datepicker extends Component {
   };
 
   getMonthList = () => {
-    return this.state.months.map((month) => (<li key={month.id}
-                                                 onClick={() => this.handleMonthSelection(month)}>{month.name()}</li>));
-  };
-
-  closeList = () => {
-    this.setState(() => ({ isOpen: false }));
-    document.removeEventListener('click', this.onClickOutside);
+    return this.state.months.map((month) => (
+      <li key={month.id}
+          className={classNames({ hovered: month === this.state.hoveredMonth })}
+          ref={(el) => {
+            if (month === this.state.hoveredMonth) this.hoveredMonthElem = el;
+          }}
+          onClick={() => this.handleMonthSelection(month)}
+          onMouseOver={() => this.handleMonthHovered(month)}>
+        {month.name()}
+      </li>));
   };
 
   openList = () => {
-    this.setState(() => ({ isOpen: true }));
+    this.setState(() => ({ isOpen: true }), () => {
+      let ulElem = this.monthsListElem.querySelectorAll('ul > li')[0];
+    });
     document.addEventListener('click', this.onClickOutside);
+  };
+
+  closeList = () => {
+    this.setState(() => ({ isOpen: false, hoveredMonth: undefined }));
+    document.removeEventListener('click', this.onClickOutside);
   };
 
   render() {
@@ -200,7 +259,6 @@ class Datepicker extends Component {
         <div className="title">תאריך יציאה</div>
 
         <div className="month-picker">
-
           <IconNext className={'icon-next'}
                     onClick={this.handleClickNext}
                     disabled={!this.getNextMonth(this.state.selectedMonth)}/>
@@ -218,7 +276,6 @@ class Datepicker extends Component {
           <IconPrevious className={'icon-previous'}
                         onClick={this.handleClickPrev}
                         disabled={!this.getPrevMonth(this.state.selectedMonth)}/>
-
         </div>
 
         <div className="days-of-week">
@@ -232,6 +289,7 @@ class Datepicker extends Component {
         </div>
 
         <Month month={this.getSelectedMonth()}
+               selectedDay={this.state.selectedDay}
                onClickDay={this.handleDaySelection}></Month>
 
         <Legend/>
