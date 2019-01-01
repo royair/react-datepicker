@@ -118,14 +118,8 @@ class Datepicker extends Component {
     return this.state.selectedMonth;
   };
 
-  getSelectedMonthIndex = () => {
-    const { selectedMonth } = this.state;
-
-    return this.state.months.findIndex((month) => month === selectedMonth);
-  };
-
   handleClickNext = () => {
-    const next = this.getNextMonth();
+    const next = this.getNextMonth(this.state.selectedMonth);
 
     // abort if end of list
     if (!next) return;
@@ -134,7 +128,7 @@ class Datepicker extends Component {
   };
 
   handleClickPrev = () => {
-    const prev = this.getPrevMonth();
+    const prev = this.getPrevMonth(this.state.selectedMonth);
 
     // abort if end of list
     if (!prev) return;
@@ -142,8 +136,8 @@ class Datepicker extends Component {
     this.setState(() => ({ selectedMonth: prev }));
   };
 
-  getNextMonth = () => {
-    const index = this.getSelectedMonthIndex();
+  getNextMonth = (month) => {
+    const index = this.state.months.indexOf(month);
 
     // return if end of list
     if (index === this.state.months.length - 1) return;
@@ -151,8 +145,8 @@ class Datepicker extends Component {
     return this.state.months[index + 1];
   };
 
-  getPrevMonth = () => {
-    const index = this.getSelectedMonthIndex();
+  getPrevMonth = (month) => {
+    const index = this.state.months.indexOf(month);
 
     // return if in the beginning of list
     if (index === 0) return;
@@ -172,6 +166,10 @@ class Datepicker extends Component {
   handleDaySelection = (selectedDay) => {
     this.setState(() => ({ selectedDay }));
     console.log(selectedDay);
+  };
+
+  handleMonthHovered = (hoveredMonth) => {
+    this.setState(() => ({ hoveredMonth }));
   };
 
   onClickOutside = (e) => {
@@ -205,7 +203,7 @@ class Datepicker extends Component {
 
           <IconNext className={'icon-next'}
                     onClick={this.handleClickNext}
-                    disabled={!this.getNextMonth()}/>
+                    disabled={!this.getNextMonth(this.state.selectedMonth)}/>
 
           <div className={classNames('months', { opened: this.state.isOpen })}
                ref={(element) => this.monthsListElem = element}>
@@ -219,7 +217,7 @@ class Datepicker extends Component {
 
           <IconPrevious className={'icon-previous'}
                         onClick={this.handleClickPrev}
-                        disabled={!this.getPrevMonth()}/>
+                        disabled={!this.getPrevMonth(this.state.selectedMonth)}/>
 
         </div>
 
