@@ -61,7 +61,6 @@ $size: 33px;
         border-radius: 50%;
         color: $light-gray;
         text-align: center;
-        transition: all 0.15s ease;
         line-height: $size;
         font-size: 12px;
         font-family: 'Open Sans', sans-serif;
@@ -71,7 +70,7 @@ $size: 33px;
           color: $turquoise;
           background-color: $light-blue;
           cursor: pointer;
-
+          transition: all 0.15s ease;
 
           &.selected {
             color: white !important;

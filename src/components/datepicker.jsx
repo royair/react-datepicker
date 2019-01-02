@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import moment from 'moment';
 import classNames from 'classnames';
+import { inject, observer } from 'mobx-react';
 
 import Month from '../components/month';
 import Legend from '../components/legend';
@@ -8,16 +8,14 @@ import { IconNext, IconPrevious, IconClose } from '../components/icons';
 
 import './datepicker.scss';
 
-const monthNames = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'];
-
 class Datepicker extends Component {
   constructor(props) {
     super(props);
 
+    this.calendar         = this.props.store.calendar;
     this.monthsListElem   = undefined;
     this.hoveredMonthElem = undefined;
     this.state            = {
-      months: [],
       selectedMonth: undefined,
       hoveredMonth: undefined,
       isOpen: false,
@@ -25,14 +23,6 @@ class Datepicker extends Component {
   }
 
   componentDidMount() {
-    for (let i = 0; i < 12; i++) {
-      const firstDayOfMonth = moment().startOf('month').add(i, 'M');
-
-      this.populateMonth(firstDayOfMonth);
-    }
-
-    // set selected month to the first one in the array
-    this.setState((state) => ({ selectedMonth: state.months[0] }));
 
     // add arrow key listeners to menu
     document.addEventListener('keydown', (e) => {
@@ -44,23 +34,23 @@ class Datepicker extends Component {
       switch (e.key) {
         case 'ArrowDown':
           // if no hovered month set it to the first month
-          newHoveredMonth = this.state.hoveredMonth
-            ? this.getNextMonth(this.state.hoveredMonth)
-            : this.state.months[0];
+          newHoveredMonth = this.calendar.hoveredMonth
+            ? this.calendar.hoveredMonth.next
+            : this.calendar.months[0];
 
           // abort if at the end of list
           if (!newHoveredMonth) return;
 
           this.setState(() => ({ hoveredMonth: newHoveredMonth }), () => {
-            this.hoveredMonthElem.scrollIntoView();
+            this.hoveredMonthElem && this.hoveredMonthElem.scrollIntoView();
           });
           break;
 
         case 'ArrowUp':
           // if no hovered month set it to the first month
-          newHoveredMonth = this.state.hoveredMonth
-            ? this.getPrevMonth(this.state.hoveredMonth)
-            : this.state.months[0];
+          newHoveredMonth = this.calendar.hoveredMonth
+            ? this.getPrevMonth(this.calendar.hoveredMonth)
+            : this.calendar.months[0];
 
           // abort if at the end of list
           if (!newHoveredMonth) return;
@@ -84,123 +74,22 @@ class Datepicker extends Component {
     });
   }
 
-  populateMonth = (firstDayOfMonth) => {
-    const today            = moment();
-    const startOfMonth     = firstDayOfMonth;
-    const endOfMonth       = moment(firstDayOfMonth).endOf('month');
-    const endOfWeekMonth   = moment(firstDayOfMonth).endOf('month').day('saturday');
-    const startOfWeekMonth = moment(firstDayOfMonth).startOf('month').day('sunday');
-    const current          = moment(startOfWeekMonth);
-
-    let month = {
-      id: null,
-      selected: today.isSame(startOfMonth, 'month') ? true : false,
-      year: null,
-      value: null,
-      name: function () {
-        return `${this.year} ${monthNames[this.value]}`
-      },
-      weeks: []
-    };
-
-    let week = {
-      id: null,
-      days: []
-    };
-
-    while (current.isSameOrBefore(endOfWeekMonth, 'day')) {
-
-      let day = null;
-
-      switch (true) {
-
-        //set days until start of month, OR days from end of month to end of week of month
-        case (current.isBetween(startOfWeekMonth, startOfMonth, 'day', '[)')):
-        case (current.isBetween(endOfMonth, endOfWeekMonth, 'day', '(]')):
-          day = {
-            id: current.format('x'),
-            value: undefined,
-            date: moment(current),
-            selectable: false
-          };
-          break;
-
-        //set days from start of month to end of month
-        case (current.isBetween(startOfMonth, endOfMonth, 'day', '[]')):
-          day = {
-            id: current.format('x'),
-            value: current.format('D'),
-            date: moment(current),
-            selectable: current.isSameOrAfter(today, 'day')
-          };
-          break;
-        default:
-
-      }
-
-      week.days.push(day);
-
-      if (week.days.length === 7) {
-        week.days.reverse();
-        week.id = month.weeks.length;
-        month.weeks.push(week);
-        week = {
-          id: null,
-          days: []
-        };
-      }
-
-      current.add(1, 'd');
-    }
-
-    month.year  = startOfMonth.year();
-    month.value = startOfMonth.month();
-    month.id    = `${month.year}-${month.value}`;
-
-    this.setState((state) => ({
-      months: [...state.months, month],
-
-    }));
-  };
-
   getSelectedMonth = () => {
-    return this.state.selectedMonth;
+    return this.props.store.calendar.selectedMonth;
   };
 
   handleClickNext = () => {
-    const next = this.getNextMonth(this.state.selectedMonth);
+    // abort if not next month
+    if (!this.props.store.calendar.selectedMonth.next) return;
 
-    // abort if end of list
-    if (!next) return;
-
-    this.setState(() => ({ selectedMonth: next }));
+    this.props.store.calendar.selectedMonth = this.props.store.calendar.selectedMonth.next;
   };
 
   handleClickPrev = () => {
-    const prev = this.getPrevMonth(this.state.selectedMonth);
+    // abort if not next month
+    if (!this.props.store.calendar.selectedMonth.prev) return;
 
-    // abort if end of list
-    if (!prev) return;
-
-    this.setState(() => ({ selectedMonth: prev }));
-  };
-
-  getNextMonth = (month) => {
-    const index = this.state.months.indexOf(month);
-
-    // return if end of list
-    if (index === this.state.months.length - 1) return;
-
-    return this.state.months[index + 1];
-  };
-
-  getPrevMonth = (month) => {
-    const index = this.state.months.indexOf(month);
-
-    // return if in the beginning of list
-    if (index === 0) return;
-
-    return this.state.months[index - 1];
+    this.props.store.calendar.selectedMonth = this.props.store.calendar.selectedMonth.prev;
   };
 
   handleToggleShowList = () => {
@@ -208,11 +97,14 @@ class Datepicker extends Component {
   };
 
   handleMonthSelection = (selectedMonth) => {
-    this.setState(() => ({ selectedMonth }));
+    this.calendar.selectedMonth = selectedMonth;
     this.closeList();
   };
 
   handleDaySelection = (selectedDay) => {
+    // abort if not selectable
+    if (!selectedDay.selectable) return;
+
     this.setState(() => ({ selectedDay }));
     console.log(selectedDay);
   };
@@ -226,26 +118,27 @@ class Datepicker extends Component {
   };
 
   getMonthList = () => {
-    return this.state.months.map((month) => (
+    return this.calendar.months.map((month) => (
       <li key={month.id}
-          className={classNames({ hovered: month === this.state.hoveredMonth })}
+          className={classNames({ hovered: month.hovered })}
           ref={(el) => {
-            if (month === this.state.hoveredMonth) this.hoveredMonthElem = el;
+            if (month === this.calendar.hoveredMonth) this.hoveredMonthElem = el;
           }}
           onClick={() => this.handleMonthSelection(month)}
           onMouseOver={() => this.handleMonthHovered(month)}>
-        {month.name()}
+        {month.name}
       </li>));
   };
 
   openList = () => {
-    this.setState(() => ({ isOpen: true }), () => {
-      let ulElem = this.monthsListElem.querySelectorAll('ul > li')[0];
-    });
+    this.setState(() => ({ isOpen: true }));
     document.addEventListener('click', this.onClickOutside);
   };
 
   closeList = () => {
+    this.calendar.isOpen        = false;
+    this.calendar.hoveredMonth = undefined;
+
     this.setState(() => ({ isOpen: false, hoveredMonth: undefined }));
     document.removeEventListener('click', this.onClickOutside);
   };
@@ -261,13 +154,13 @@ class Datepicker extends Component {
         <div className="month-picker">
           <IconNext className={'icon-next'}
                     onClick={this.handleClickNext}
-                    disabled={!this.getNextMonth(this.state.selectedMonth)}/>
+                    disabled={!this.calendar.selectedMonth.next}/>
 
           <div className={classNames('months', { opened: this.state.isOpen })}
                ref={(element) => this.monthsListElem = element}>
             <div
               className="selected"
-              onClick={this.handleToggleShowList}>{this.getSelectedMonth() && this.getSelectedMonth().name()}</div>
+              onClick={this.handleToggleShowList}>{this.getSelectedMonth() && this.getSelectedMonth().name}</div>
             <ul>
               {this.getMonthList()}
             </ul>
@@ -275,7 +168,7 @@ class Datepicker extends Component {
 
           <IconPrevious className={'icon-previous'}
                         onClick={this.handleClickPrev}
-                        disabled={!this.getPrevMonth(this.state.selectedMonth)}/>
+                        disabled={!this.calendar.selectedMonth.prev}/>
         </div>
 
         <div className="days-of-week">
@@ -299,4 +192,4 @@ class Datepicker extends Component {
   }
 }
 
-export default Datepicker;
+export default inject('store')(observer(Datepicker));
