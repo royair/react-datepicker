@@ -18,7 +18,7 @@ class Calendar {
       this.months.push(month);
     }
 
-    // add prev and next to each month
+    // add prev & next to each month
     this.months.forEach((month, index, months) => {
       month.prev = months[index - 1];
       month.next = months[index + 1];
@@ -32,6 +32,19 @@ class Calendar {
   set selectedMonth(month) {
     this.months.forEach((month) => month.selected = false);
     month.selected = true;
+  }
+
+  get selectedDay() {
+    let weeks = this.months.map((month) => month.weeks).flat();
+    let days  = weeks.map((week) => week.days).flat();
+    return days.find((day) => day.selected);
+  };
+
+  set selectedDay(day) {
+    let weeks = this.months.map((month) => month.weeks).flat();
+    let days  = weeks.map((week) => week.days).flat();
+    days.forEach((day) => day.selected = false);
+    day.selected = true;
   }
 
   get hoveredMonth() {
@@ -93,10 +106,11 @@ class Week {
 
 class Day {
   constructor(date) {
-    this.id   = date.format('x');
-    this.date = moment(date);
-    this.prev = undefined;
-    this.next = undefined;
+    this.id       = date.format('x');
+    this.date     = moment(date);
+    this.prev     = undefined;
+    this.next     = undefined;
+    this.selected = false;
   }
 }
 
@@ -125,6 +139,7 @@ decorate(Calendar,
     months: observable,
     isOpen: observable,
     selectedMonth: computed,
+    selectedDay: computed,
     hoveredMonth: computed,
   });
 
@@ -149,8 +164,9 @@ decorate(Day,
   {
     id: observable,
     date: observable,
-    prev:observable,
-    next:observable,
+    prev: observable,
+    next: observable,
+    selected: observable,
   });
 
 export default Calendar;
