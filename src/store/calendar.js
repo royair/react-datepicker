@@ -70,7 +70,7 @@ class Month {
     this.year     = startOfMonth.year();
     this.value    = startOfMonth.month();
     this.id       = `${this.year}-${this.value}`;
-    this.name     = `${this.year} ${monthNames[this.value]}`;
+    this.name     = `${monthNames[this.value]} ${this.year}`;
     this.selected = today.isSame(startOfMonth, 'month') ? true : false;
     this.hovered  = false;
     this.weeks    = [];
