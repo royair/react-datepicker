@@ -31,19 +31,19 @@ class Calendar {
 
   set selectedMonth(month) {
     this.months.forEach((month) => month.selected = false);
-    month.selected = true;
-    this.hoveredMonth  = month;
+    month.selected    = true;
+    this.hoveredMonth = month;
   }
 
   get selectedDay() {
-    let weeks = this.months.map((month) => month.weeks).flat();
-    let days  = weeks.map((week) => week.days).flat();
+    let weeks = this.months.reduce((acc, curr) => acc.concat(curr.weeks), []);
+    let days  = weeks.reduce((acc, curr) => acc.concat(curr.days), []);
     return days.find((day) => day.selected);
   };
 
   set selectedDay(day) {
-    let weeks = this.months.map((month) => month.weeks).flat();
-    let days  = weeks.map((week) => week.days).flat();
+    let weeks = this.months.reduce((acc, curr) => acc.concat(curr.weeks), []);
+    let days  = weeks.reduce((acc, curr) => acc.concat(curr.days), []);
     days.forEach((day) => day.selected = false);
     day.selected = true;
   }
