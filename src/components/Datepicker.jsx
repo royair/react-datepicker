@@ -59,7 +59,7 @@ class Datepicker extends Component {
     if (!selectedDay.selectable) return;
 
     this.calendar.selectedDay = selectedDay;
-    console.log(selectedDay);
+    console.log(selectedDay.date.toDate());
   };
 
   setHoveredMonthElem = (el) => {
