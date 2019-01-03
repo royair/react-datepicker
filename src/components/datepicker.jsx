@@ -59,12 +59,12 @@ class Datepicker extends Component {
           break;
 
         case 'Enter':
-
+          this.calendar.selectedMonth = this.calendar.hoveredMonth;
+          this.closeList();
           break;
 
         default:
       }
-
     });
   }
 
