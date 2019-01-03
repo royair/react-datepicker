@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Week from "./week";
+import Week from "./Week";
 
 class Month extends Component {
   render() {

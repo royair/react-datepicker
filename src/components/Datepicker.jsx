@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import classNames from 'classnames';
 import { inject, observer } from 'mobx-react';
 
-import Month from '../components/month';
-import Legend from '../components/legend';
-import { IconNext, IconPrevious, IconClose } from '../components/icons';
+import Month from './Month';
+import Legend from './Legend';
+import MonthList from './MonthList';
+import DaysOfWeek from './DaysOfWeek';
+import { IconNext, IconPrevious, IconClose } from './Icons';
 
-import './datepicker.scss';
+import './Datepicker.scss';
 
 class Datepicker extends Component {
   constructor(props) {
@@ -17,14 +19,49 @@ class Datepicker extends Component {
     this.hoveredMonthElem = undefined;
   }
 
-  componentDidMount() {
+  handleClickNext = () => {
+    // abort if not next month
+    if (!this.calendar.selectedMonth.next) return;
 
-    // add arrow key listeners to menu
-    document.addEventListener('keydown', (e) => {
+    this.calendar.selectedMonth = this.calendar.selectedMonth.next;
+  };
 
-      // abort if list is closed
-      if (!this.calendar.isOpen) return;
+  handleClickPrev = () => {
+    // abort if not next month
+    if (!this.calendar.selectedMonth.prev) return;
 
+    this.calendar.selectedMonth = this.calendar.selectedMonth.prev;
+  };
+
+  handleToggleShowList = () => {
+    this.calendar.isOpen ? this.closeList() : this.openList();
+  };
+
+  handleMonthSelection = (selectedMonth) => {
+    this.calendar.selectedMonth = selectedMonth;
+    this.closeList();
+  };
+
+  handleMonthHovered = (hoveredMonth) => {
+    this.calendar.hoveredMonth = hoveredMonth;
+  };
+
+  handleDaySelection = (selectedDay) => {
+    // abort if day not selectable
+    if (!selectedDay.selectable) return;
+
+    this.calendar.selectedDay = selectedDay;
+    console.log(selectedDay);
+  };
+
+  setHoveredMonthElem = (el) => {
+    this.hoveredMonthElem = el;
+  };
+
+  handleMenuKeyStrokes = (e) => {
+
+    // handle keystrokes for opened menu
+    if (this.calendar.isOpen) {
       let newHoveredMonth;
 
       switch (e.key) {
@@ -64,71 +101,28 @@ class Datepicker extends Component {
           break;
 
         default:
+
       }
-    });
-  }
-
-  handleClickNext = () => {
-    // abort if not next month
-    if (!this.calendar.selectedMonth.next) return;
-
-    this.calendar.selectedMonth = this.calendar.selectedMonth.next;
-  };
-
-  handleClickPrev = () => {
-    // abort if not next month
-    if (!this.calendar.selectedMonth.prev) return;
-
-    this.calendar.selectedMonth = this.calendar.selectedMonth.prev;
-  };
-
-  handleToggleShowList = () => {
-    this.calendar.isOpen ? this.closeList() : this.openList();
-  };
-
-  handleMonthSelection = (selectedMonth) => {
-    this.calendar.selectedMonth = selectedMonth;
-    this.closeList();
-  };
-
-  handleDaySelection = (selectedDay) => {
-    // abort if day not selectable
-    if (!selectedDay.selectable) return;
-
-    this.calendar.selectedDay = selectedDay;
-    console.log(selectedDay);
-  };
-
-  handleMonthHovered = (hoveredMonth) => {
-    this.calendar.hoveredMonth = hoveredMonth;
+    }
   };
 
   onClickOutside = (e) => {
     if (!this.monthsListElem.contains(e.target)) this.closeList();
   };
 
-  getMonthList = () => {
-    return this.calendar.months.map((month) => (
-      <li key={month.id}
-          className={classNames({ hovered: month.hovered })}
-          ref={(el) => {
-            if (month === this.calendar.hoveredMonth) this.hoveredMonthElem = el;
-          }}
-          onClick={() => this.handleMonthSelection(month)}
-          onMouseOver={() => this.handleMonthHovered(month)}>
-        {month.name}
-      </li>));
-  };
-
   openList = () => {
     this.calendar.isOpen = true;
+
+    document.addEventListener('keydown', this.handleMenuKeyStrokes);
     document.addEventListener('click', this.onClickOutside);
   };
 
   closeList = () => {
     this.calendar.isOpen       = false;
     this.calendar.hoveredMonth = undefined;
+    this.hoveredMonthElem      = undefined;
 
+    document.removeEventListener('keydown', this.handleMenuKeyStrokes);
     document.removeEventListener('click', this.onClickOutside);
   };
 
@@ -154,9 +148,12 @@ class Datepicker extends Component {
               onClick={this.handleToggleShowList}>
               {this.calendar.selectedMonth.name}
             </div>
-            <ul>
-              {this.getMonthList()}
-            </ul>
+
+            <MonthList months={this.calendar.months}
+                       onClick={this.handleMonthSelection}
+                       onMouseOver={this.handleMonthHovered}
+                       setRef={this.setHoveredMonthElem}/>
+
           </div>
 
           <IconPrevious className={'icon-previous'}
@@ -164,15 +161,7 @@ class Datepicker extends Component {
                         disabled={!this.calendar.selectedMonth.prev}/>
         </div>
 
-        <div className="days-of-week">
-          <div className="day">ש'</div>
-          <div className="day">ו'</div>
-          <div className="day">ה'</div>
-          <div className="day">ד'</div>
-          <div className="day">ג'</div>
-          <div className="day">ב'</div>
-          <div className="day">א'</div>
-        </div>
+        <DaysOfWeek/>
 
         <Month month={this.calendar.selectedMonth}
                selectedDay={this.calendar.selectedDay}

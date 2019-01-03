@@ -7,6 +7,4 @@ class Store {
 
 decorate(Store, { calendar: observable });
 
-console.log(new Store());
-
 export default new Store();
