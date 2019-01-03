@@ -183,6 +183,12 @@ $size: 33px;
         }
       }
 
+      &.opened {
+        .selected {
+          border-bottom: 1px solid $light-gray;
+        }
+      }
+
       ul {
         padding: 0;
         direction: rtl;
