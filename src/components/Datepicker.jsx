@@ -19,6 +19,14 @@ class Datepicker extends Component {
     this.hoveredMonthElem = undefined;
   }
 
+  componentDidMount() {
+    document.addEventListener('keydown', this.handleKeyStrokes);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeyStrokes);
+  }
+
   handleClickNext = () => {
     // abort if not next month
     if (!this.calendar.selectedMonth.next) return;
@@ -106,6 +114,28 @@ class Datepicker extends Component {
     }
   };
 
+  handleKeyStrokes = (e) => {
+    switch (e.key) {
+      case 'ArrowLeft':
+        this.handleClickNext();
+        this.hoveredMonthElem && this.hoveredMonthElem.scrollIntoView();
+        break;
+
+      case 'ArrowRight':
+        this.handleClickPrev();
+        this.hoveredMonthElem && this.hoveredMonthElem.scrollIntoView();
+        break;
+
+      case 'ArrowDown':
+        // no need to reopen if already opened
+        if (this.calendar.isOpen) return;
+        this.openList();
+        break;
+
+      default:
+    }
+  };
+
   onClickOutside = (e) => {
     if (!this.monthsListElem.contains(e.target)) this.closeList();
   };
@@ -135,17 +165,15 @@ class Datepicker extends Component {
         <div className="title">תאריך יציאה</div>
 
         <div className="month-picker">
-          <IconNext className={'icon-next'}
-                    onClick={this.handleClickNext}
+          <IconNext onClick={this.handleClickNext}
                     disabled={!this.calendar.selectedMonth.next}/>
 
           <div
             className={classNames('months', { opened: this.calendar.isOpen })}
             ref={(element) => this.monthsListElem = element}>
 
-            <div
-              className="selected"
-              onClick={this.handleToggleShowList}>
+            <div className="selected"
+                 onClick={this.handleToggleShowList}>
               {this.calendar.selectedMonth.name}
             </div>
 
@@ -156,8 +184,7 @@ class Datepicker extends Component {
 
           </div>
 
-          <IconPrevious className={'icon-previous'}
-                        onClick={this.handleClickPrev}
+          <IconPrevious onClick={this.handleClickPrev}
                         disabled={!this.calendar.selectedMonth.prev}/>
         </div>
 

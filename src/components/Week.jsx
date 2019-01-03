@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Day from "./Day";
+import { observer } from "mobx-react";
 
 class Week extends Component {
   render() {
@@ -23,4 +24,4 @@ Week.defaultProps = {
   }
 };
 
-export default Week;
+export default observer(Week);

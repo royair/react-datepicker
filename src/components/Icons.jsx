@@ -6,7 +6,7 @@ export function IconNext(props) {
     <div
       className={classNames('icon-container', { disable: props.disabled })}
       onClick={props.onClick}>
-      <svg className={classNames('icon', props.className)}
+      <svg className={classNames('icon icon-next', props.className)}
            xmlns="http://www.w3.org/2000/svg"
            viewBox="8 6 8 12">
         <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
@@ -21,7 +21,7 @@ export function IconPrevious(props) {
     <div
       className={classNames('icon-container', { disable: props.disabled })}
       onClick={props.onClick}>
-      <svg className={classNames('icon', props.className)}
+      <svg className={classNames('icon icon-previous', props.className)}
            xmlns="http://www.w3.org/2000/svg"
            viewBox="8 6 8 12">
         <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
@@ -33,7 +33,7 @@ export function IconPrevious(props) {
 
 export function IconClose(props) {
   return (
-    <svg className={classNames('icon', props.className)}
+    <svg className={classNames('icon icon-close', props.className)}
          xmlns="http://www.w3.org/2000/svg"
          viewBox="63 63 386 386">
       <path

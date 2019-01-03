@@ -32,6 +32,7 @@ class Calendar {
   set selectedMonth(month) {
     this.months.forEach((month) => month.selected = false);
     month.selected = true;
+    this.hoveredMonth  = month;
   }
 
   get selectedDay() {

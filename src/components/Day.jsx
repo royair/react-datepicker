@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import classNames from 'classnames';
+import { observer } from "mobx-react";
 
 class Day extends Component {
   render() {
@@ -21,4 +22,4 @@ Day.defaultProps = {
   day: {}
 };
 
-export default Day;
+export default observer(Day);
