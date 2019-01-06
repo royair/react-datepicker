@@ -1,12 +1,12 @@
 import React from 'react';
 import classNames from "classnames";
 
-export function IconNext(props) {
+export function IconNext({onClick, className, disabled}) {
   return (
     <div
-      className={classNames('icon-container', { disable: props.disabled })}
-      onClick={props.onClick}>
-      <svg className={classNames('icon icon-next', props.className)}
+      className={classNames('icon-container', { disabled })}
+      onClick={onClick}>
+      <svg className={classNames('icon icon-next', className)}
            xmlns="http://www.w3.org/2000/svg"
            viewBox="8 6 8 12">
         <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
@@ -16,12 +16,12 @@ export function IconNext(props) {
   );
 };
 
-export function IconPrevious(props) {
+export function IconPrevious({onClick, className, disabled}) {
   return (
     <div
-      className={classNames('icon-container', { disable: props.disabled })}
-      onClick={props.onClick}>
-      <svg className={classNames('icon icon-previous', props.className)}
+      className={classNames('icon-container', { disabled })}
+      onClick={onClick}>
+      <svg className={classNames('icon icon-previous', className)}
            xmlns="http://www.w3.org/2000/svg"
            viewBox="8 6 8 12">
         <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
@@ -31,9 +31,9 @@ export function IconPrevious(props) {
   );
 }
 
-export function IconClose(props) {
+export function IconClose({className}) {
   return (
-    <svg className={classNames('icon icon-close', props.className)}
+    <svg className={classNames('icon icon-close', className)}
          xmlns="http://www.w3.org/2000/svg"
          viewBox="63 63 386 386">
       <path
