@@ -62,6 +62,18 @@ class Datepicker extends Component {
     console.log(day.date.toDate());
   };
 
+  handleMouseOverDay = (day) => {
+    // abort if day not selectable
+    if (!day.selectable) return;
+
+    this.calendar.handleHoveredDay(day);
+  };
+
+  handleMouseOutDay = (day) => {
+    day.hovered       = false;
+    day.endHoveredDay = false;
+  };
+
   setHoveredMonthElem = (el) => {
     this.hoveredMonthElem = el;
   };
@@ -190,7 +202,9 @@ class Datepicker extends Component {
         <DaysOfWeek/>
 
         <Month month={this.calendar.selectedMonth}
-               onClickDay={this.handleDaySelection}></Month>
+               onClickDay={this.handleDaySelection}
+               onMouseOverDay={this.handleMouseOverDay}
+               onMouseOutDay={this.handleMouseOutDay}></Month>
 
         <Legend/>
 

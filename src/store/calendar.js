@@ -27,7 +27,7 @@ class Calendar {
 
   get days() {
     // abort if not weeks
-    if (!this.months) return;
+    if (!this.months) return undefined;
 
     let weeks = this.months.reduce((acc, curr) => acc.concat(curr.weeks), []);
     let days  = weeks.reduce((acc, curr) => acc.concat(curr.days), []);
@@ -44,6 +44,41 @@ class Calendar {
     this.hoveredMonth = month;
   }
 
+  get hoveredMonth() {
+    return this.months && this.months.find((month) => month.hovered);
+  };
+
+  set hoveredMonth(month) {
+    this.months.forEach((month) => month.hovered = false);
+    month && (month.hovered = true);
+  }
+
+  get hoveredDay() {
+    return this.days && this.days.find((day) => day.hovered);
+  }
+
+  set hoveredDay(day) {
+    this.days && this.days.forEach((day) => day.hovered = false);
+
+    day.hovered = true;
+  }
+
+  get endHoveredDay() {
+    return this.days && this.days.find((day) => day.endHoveredDay);
+  }
+
+  set endHoveredDay(day) {
+    this.days.forEach((d) => {
+      // reset all days
+      d.endHoveredDay = false;
+      d.hovered       = false;
+    });
+
+    // set desired day to be endHoveredDay
+    day.endHoveredDay = true;
+    day.hovered       = true;
+  }
+
   get startDay() {
     return this.days && this.days.find((day) => day.startDay);
   }
@@ -51,9 +86,11 @@ class Calendar {
   set startDay(day) {
     this.days.forEach((d) => {
       // reset all days
-      d.startDay = false;
-      d.endDay   = false;
-      d.selected = false;
+      d.startDay      = false;
+      d.endDay        = false;
+      d.selected      = false;
+      d.hovered       = false;
+      d.endHoveredDay = false;
 
       // set for selected day
       if (d === day) {
@@ -72,15 +109,6 @@ class Calendar {
     day.selected = true;
   }
 
-  get hoveredMonth() {
-    return this.months && this.months.find((month) => month.hovered);
-  };
-
-  set hoveredMonth(month) {
-    this.months.forEach((month) => month.hovered = false);
-    month && (month.hovered = true);
-  }
-
   selectDay(day) {
     if (!this.startDay && !this.endDay) {
       this.startDay = day;
@@ -95,6 +123,22 @@ class Calendar {
     }
   }
 
+  handleHoveredDay(day) {
+    if (!this.startDay && !this.endDay) {
+      this.hoveredDay = day;
+
+    } else if (this.startDay && !this.endDay) {
+      if (day.date.isSameOrBefore(this.startDay.date, 'day'))
+        this.hoveredDay = day;
+
+      else if (day.date.isAfter(this.startDay.date, 'day'))
+        this.endHoveredDay = day;
+
+    } else if (this.startDay && this.endDay) {
+
+    }
+  }
+
   setInRangeSelectedDays = autorun(() => {
     // abort if no range
     if (!this.startDay || !this.endDay) return;
@@ -104,8 +148,20 @@ class Calendar {
       const endDate   = this.endDay.date;
 
       day.date.isBetween(startDate, endDate, 'day', '()') && (day.selected = true)
-    })
-  })
+    });
+  });
+
+  setInRangeHoveredDays = autorun(() => {
+    // abort if no range
+    if (!this.startDay || !this.endHoveredDay) return;
+
+    this.days.forEach((day) => {
+      const startDate      = this.startDay.date;
+      const endHoveredDate = this.endHoveredDay.date;
+
+      day.date.isBetween(startDate, endHoveredDate, 'day', '()') && (day.hovered = true)
+    });
+  });
 }
 
 class Month {
@@ -155,11 +211,13 @@ class Week {
 
 export class Day {
   constructor(date) {
-    this.id       = date.format('x');
-    this.date     = moment(date);
-    this.selected = false;
-    this.startDay = false;
-    this.endDay   = false;
+    this.id            = date.format('x');
+    this.date          = moment(date);
+    this.selected      = false;
+    this.hovered       = false;
+    this.endHoveredDay = false;
+    this.startDay      = false;
+    this.endDay        = false;
   }
 }
 
@@ -189,10 +247,12 @@ decorate(Calendar,
     isOpen: observable,
     days: computed,
     selectedMonth: computed,
+    hoveredMonth: computed,
+    endHoveredDay: computed,
     startDay: computed,
     endDay: computed,
-    hoveredMonth: computed,
     selectDay: action,
+    setHoveredDay: action,
   });
 
 decorate(Month,
@@ -217,6 +277,8 @@ decorate(Day,
     id: observable,
     date: observable,
     selected: observable,
+    hovered: observable,
+    endHoveredDay: observable,
     startDay: observable,
     endDay: observable,
   });

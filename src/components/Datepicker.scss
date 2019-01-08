@@ -78,7 +78,7 @@ $size: 33px;
             cursor: default;
           }
 
-          &:hover {
+          &.hovered {
             color: white;
             background-color: lighten($turquoise, 35%);
           }
@@ -94,6 +94,10 @@ $size: 33px;
 
         &.start-day.end-day {
           border-radius: 50%;
+        }
+
+        &.end-hovered-day{
+          border-radius: 50% 0% 0% 50%;
         }
       }
     }
