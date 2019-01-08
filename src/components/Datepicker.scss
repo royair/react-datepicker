@@ -83,6 +83,18 @@ $size: 33px;
             background-color: lighten($turquoise, 35%);
           }
         }
+
+        &.start-day {
+          border-radius: 0% 50% 50% 0%;
+        }
+
+        &.end-day {
+          border-radius: 50% 0% 0% 50%;
+        }
+
+        &.start-day.end-day {
+          border-radius: 50%;
+        }
       }
     }
   }

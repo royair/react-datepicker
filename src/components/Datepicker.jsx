@@ -54,12 +54,12 @@ class Datepicker extends Component {
     this.calendar.hoveredMonth = hoveredMonth;
   };
 
-  handleDaySelection = (selectedDay) => {
+  handleDaySelection = (day) => {
     // abort if day not selectable
-    if (!selectedDay.selectable) return;
+    if (!day.selectable) return;
 
-    this.calendar.selectedDay = selectedDay;
-    console.log(selectedDay.date.toDate());
+    this.calendar.selectDay(day);
+    console.log(day.date.toDate());
   };
 
   setHoveredMonthElem = (el) => {
@@ -67,7 +67,6 @@ class Datepicker extends Component {
   };
 
   handleMenuKeyStrokes = (e) => {
-
     // handle keystrokes for opened menu
     if (this.calendar.isOpen) {
       let newHoveredMonth;
@@ -191,10 +190,18 @@ class Datepicker extends Component {
         <DaysOfWeek/>
 
         <Month month={this.calendar.selectedMonth}
-               selectedDay={this.calendar.selectedDay}
                onClickDay={this.handleDaySelection}></Month>
 
         <Legend/>
+
+        <footer className="text-left">
+          <h3>start
+            date: {this.calendar.startDay && this.calendar.startDay.date.format('DD-MM-YYYY')}
+          </h3>
+          <h3>end
+            date: {this.calendar.endDay && this.calendar.endDay.date.format('DD-MM-YYYY')}
+          </h3>
+        </footer>
 
       </div>
     )
