@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/react-datepicker/precache-manifest.d4b666520efaf7a57d73c8969071ed65.js"
+  "/react-datepicker/precache-manifest.27e75e74546778542d6eac19d885342d.js"
 );
 
 workbox.clientsClaim();
